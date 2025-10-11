@@ -1,0 +1,252 @@
+:root {
+  --sb-w: 230px;
+  --fs: 14px;
+}
+
+/* =========================
+   Hamburger (mobile toggle)
+   ========================= */
+.hamburger {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  width: 32px;
+  height: 24px;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  padding: 0;
+  z-index: 200;
+}
+.hamburger span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: #fff;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.hamburger.is-active span:nth-child(1) {
+  transform: translateY(11px) rotate(45deg);
+}
+.hamburger.is-active span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.is-active span:nth-child(3) {
+  transform: translateY(-11px) rotate(-45deg);
+}
+
+/* =========================
+   Sidebar layout
+   ========================= */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--sb-w);
+  background: #111;
+  color: #eee;
+  border-right: 1px solid #1b1b1b;
+  transform: translateX(0);
+  transition: transform 0.25s ease;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+.sidebar-head {
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  border-bottom: 1px solid #1b1b1b;
+}
+
+.nav {
+  padding: 8px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+/* =========================
+   Simplified static sidebar
+   ========================= */
+
+/* Group title */
+.grp-btn {
+  all: unset;
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #888;
+  margin: 12px 0 4px 10px;
+  cursor: default;
+}
+
+/* Section wrapper */
+.grp {
+  margin-bottom: 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #1b1b1b;
+}
+
+/* Always visible child panel */
+.panel {
+  max-height: none !important;
+  overflow: visible;
+  padding-left: 6px;
+}
+
+/* Links */
+.link {
+  font-size: var(--fs);
+  padding: 6px 14px;
+  color: #ccc;
+  display: block;
+  border-radius: 5px;
+  margin: 2px 0;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+.link:hover {
+  background: #1b1b1b;
+  color: #fff;
+}
+
+/* Active link */
+.link.current {
+  background: #1b1b1b;
+  color: #4f9cff;
+  font-weight: 600;
+  position: relative;
+}
+.link.current::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #4f9cff;
+  border-radius: 0 3px 3px 0;
+}
+
+/* =========================
+   Footer / Profile section
+   ========================= */
+.sidebar-footer {
+  margin-top: auto;
+  padding: 10px 12px;
+  border-top: 1px solid #1b1b1b;
+  display: grid;
+  gap: 10px;
+}
+
+.profile {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: #2a2a2a;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  user-select: none;
+}
+
+.name {
+  font-size: 14px;
+  color: #f0f0f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.role {
+  font-size: 12px;
+  color: #a8a8a8;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* Logout */
+.nav-btn.logout-btn {
+  width: 100%;
+  background: #1b1b1b;
+  color: #ddd;
+  border: 1px solid #262626;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.nav-btn.logout-btn:hover {
+  background: #232323;
+  color: #fff;
+}
+
+/* =========================
+   Scrollbar + responsive
+   ========================= */
+.nav::-webkit-scrollbar {
+  width: 8px;
+}
+.nav::-webkit-scrollbar-thumb {
+  background: #232323;
+  border-radius: 4px;
+}
+.nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Mobile behavior */
+@media (max-width: 860px) {
+  .hamburger {
+    display: flex;
+  }
+  .sidebar {
+    transform: translateX(-100%);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-head .brand {
+    padding-left: 50px;
+    padding-top: 4px;
+  }
+}
+
+/* Compact variant placeholder */
+@media (min-width: 861px) {
+  .sidebar.narrow {
+    width: 60px;
+  }
+}
+
+/* Small screens */
+@media (max-width: 360px) {
+  .name {
+    font-size: 13px;
+  }
+  .role {
+    font-size: 11px;
+  }
+  .avatar {
+    width: 32px;
+    height: 32px;
+  }
+}

@@ -1,0 +1,79 @@
+/* Global reset and theme */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  html, body, #root {
+    height: 100%;
+  }
+  
+  body {
+    font-family: "Poppins", Arial, sans-serif;
+    background: #1f1f1f; /* dark gray background */
+  }
+/* Full page background */
+.app {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #1f1f1f; /* dark gray */
+    font-family: "Poppins", Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  /* Card */
+  .welcome-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 48px 36px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+  }
+  
+  /* Title */
+  .app-title {
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 32px;
+  }
+  
+  /* Buttons container */
+  .nav-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  /* Buttons */
+  .btn {
+    display: block;
+    text-decoration: none;
+    background: #111;
+    color: #fff;
+    padding: 14px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+    transition: background 0.2s ease;
+  }
+  
+  .btn:hover {
+    background: #333;
+  }
+  
+  /* Desktop layout: row buttons */
+  @media (min-width: 600px) {
+    .nav-buttons {
+      flex-direction: row;
+    }
+    .btn {
+      flex: 1;
+    }
+  }
+    

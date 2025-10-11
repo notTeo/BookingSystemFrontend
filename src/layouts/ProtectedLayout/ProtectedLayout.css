@@ -1,0 +1,19 @@
+
+/* =========================
+   Content offset (prevents hiding under sidebar)
+   ========================= */
+   .main-with-sidebar,
+   .with-sidebar {
+     margin-left: var(--sb-w);
+     min-height: 100vh;
+     padding: 16px;
+     box-sizing: border-box;
+   }
+   
+   /* Disable offset on mobile (sidebar slides over content) */
+   @media (max-width: 860px) {
+     .main-with-sidebar,
+     .with-sidebar {
+       margin-left: 0;
+     }
+   }
