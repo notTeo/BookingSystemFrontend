@@ -1,0 +1,101 @@
+.shop-overview {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  
+  .shop-header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .shop-header .subtitle {
+    color: #777;
+    font-size: 0.9rem;
+  }
+  
+  /* === STATS GRID === */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .stat-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s ease;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-3px);
+  }
+  
+  .stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #222;
+  }
+  
+  .stat-label {
+    color: #777;
+    font-size: 0.9rem;
+    margin-top: 4px;
+  }
+  
+  /* === RECENT BOOKINGS TABLE === */
+  .recent-section h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  
+  .recent-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  }
+  
+  .recent-table th,
+  .recent-table td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .recent-table th {
+    background: #fafafa;
+    font-weight: 600;
+    color: #444;
+  }
+  
+  .recent-table tbody tr:hover {
+    background: #f9f9f9;
+  }
+  
+  .status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: capitalize;
+  }
+  
+  .status.confirmed {
+    background: #e1f6e9;
+    color: #2b9348;
+  }
+  
+  .status.pending {
+    background: #fff3d6;
+    color: #b68b00;
+  }
+  

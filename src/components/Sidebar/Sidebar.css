@@ -1,5 +1,5 @@
 :root {
-  --sb-w: 230px;
+  --sb-w: 260px;
   --fs: 14px;
 }
 
@@ -70,7 +70,11 @@
   padding: 8px;
   overflow-y: auto;
   scrollbar-gutter: stable;
+  flex: 1;
+  position: relative;
 }
+
+
 
 /* =========================
    Simplified static sidebar
@@ -250,3 +254,116 @@
     height: 32px;
   }
 }
+
+
+.shop-selector {
+  width: 100%;
+  background: #1a1a1a;
+  color: #eee;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.shop-selector optgroup {
+  color: #aaa;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.shop-selector option {
+  background: #111;
+  color: #fff;
+}
+
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0px 18px;
+  height: 56px; 
+  background-color: #000; /* solid black background */
+  color: #fff;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.brand {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.brand.shop-mode {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
+}
+
+.back-arrow {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  transform: translateY(-2px);
+}
+
+.back-arrow:hover {
+  color: #fff;
+  transform: translateX(-2px);
+}
+
+/* === SHOP NAME === */
+.shop-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ----------------------------------
+   SLIDE TRANSITION (CAROUSEL STYLE)
+---------------------------------- */
+/* .nav {
+  overflow-x: hidden;
+
+} */
+
+.sidebar-slider {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Both panels stacked */
+.sidebar-panel {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+/* Active panel fades in */
+.sidebar-slider.global-mode .global {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar-slider.shop-mode .shop {
+  opacity: 1;
+  pointer-events: auto;
+}
+

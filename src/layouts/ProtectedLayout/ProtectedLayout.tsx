@@ -15,7 +15,7 @@ export default function ProtectedLayout() {
 
   return (
     <div >
-      <Sidebar role={user.role} name={user.name} />
+      <Sidebar user={user}  />
       <div className="with-sidebar">
         <Outlet context={{ user }} />
       </div>

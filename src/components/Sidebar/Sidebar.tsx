@@ -1,18 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import type { Role } from "../../types/user";
+import type { Group, UserDTO } from "../../types/user";
 import "./Sidebar.css";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-type Item = { id: string; label: string; link: string; roles: Role[] };
-type Group = { id: string; label: string; roles: Role[]; children: Item[] };
-
-export default function Sidebar({ role, name }: { role: Role; name?: string }) {
+export default function Sidebar({ user }: { user: UserDTO }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
-  
 
+  const navigate = useNavigate();
   const { logout } = useAuth();
 
   const [activeShop, setActiveShop] = useState<null | {
@@ -21,39 +17,45 @@ export default function Sidebar({ role, name }: { role: Role; name?: string }) {
   }>(null);
   const isShopSelected = !!activeShop;
 
+  // ✅ must come BEFORE match
   const { pathname: currentPath } = useLocation();
 
+  // ✅ extract shop id from URL
+  const match = currentPath.match(/\/shops\/(\d+)/);
+  const shopIdFromPath = match ? Number(match[1]) : null;
 
   const toggleGroup = (id: string) => setOpen((s) => ({ ...s, [id]: !s[id] }));
   const toggleSidebar = () => setSidebarOpen((s) => !s);
 
   // ---------------------
-  // GLOBAL GROUPS (no shop selected)
+  // GLOBAL GROUPS
   // ---------------------
   const globalGroups = useMemo<Group[]>(
     () => [
       {
         id: "shops",
-        label: "Shops",
+        label: "My Shops",
         roles: ["BUSINESS", "MANAGER", "STAFF"],
         children: [
           {
-            id: "my-shops",
-            label: "My Shops",
-            link: "/shops",
-            roles: ["BUSINESS"],
+            id: "all-shops",
+            label: "All Shops",
+            link: "/shops/all",
+            roles: ["BUSINESS"] as const,
           },
-          {
-            id: "assigned-shops",
-            label: "Assigned Shops",
-            link: "/shops/assigned",
-            roles: ["BUSINESS", "MANAGER", "STAFF"],
-          },
+          ...(Array.isArray(user?.shops)
+            ? user.shops.map((s) => ({
+                id: `shop-${s.id}`,
+                label: s.name,
+                link: `/shops/${s.id}/overview`,
+                roles: ["BUSINESS", "MANAGER", "STAFF"] as const,
+              }))
+            : []),
           {
             id: "create-shop",
-            label: "Create Shop",
+            label: "+ Create Shop",
             link: "/shops/create",
-            roles: ["BUSINESS"],
+            roles: ["BUSINESS"] as const,
           },
         ],
       },
@@ -96,27 +98,14 @@ export default function Sidebar({ role, name }: { role: Role; name?: string }) {
         ],
       },
     ],
-    []
+    [user]
   );
 
   // ---------------------
-  // SHOP GROUPS (active shop context)
+  // SHOP GROUPS
   // ---------------------
   const shopGroups = useMemo<Group[]>(
     () => [
-      {
-        id: "overview",
-        label: "Overview",
-        roles: ["BUSINESS", "MANAGER", "STAFF"],
-        children: [
-          {
-            id: "overview",
-            label: "Shop Overview",
-            link: `/shops/${activeShop?.id ?? "active"}/overview`,
-            roles: ["BUSINESS", "MANAGER", "STAFF"],
-          },
-        ],
-      },
       {
         id: "team",
         label: "Team",
@@ -125,13 +114,13 @@ export default function Sidebar({ role, name }: { role: Role; name?: string }) {
           {
             id: "shop-team",
             label: "All Members",
-            link: `/shops/${activeShop?.id ?? "active"}/team`,
+            link: `/shops/${shopIdFromPath ?? activeShop?.id ?? "active"}/team`,
             roles: ["BUSINESS", "MANAGER"],
           },
           {
             id: "invite",
             label: "Invite Member",
-            link: `/shops/${activeShop?.id ?? "active"}/team/invite`,
+            link: `/shops/${shopIdFromPath ?? activeShop?.id ?? "active"}/team/invite`,
             roles: ["BUSINESS", "MANAGER"],
           },
         ],
@@ -144,13 +133,13 @@ export default function Sidebar({ role, name }: { role: Role; name?: string }) {
           {
             id: "service-library",
             label: "Service Library",
-            link: `/shops/${activeShop?.id ?? "active"}/services`,
+            link: `/shops/${shopIdFromPath ?? activeShop?.id ?? "active"}/services`,
             roles: ["BUSINESS", "MANAGER", "STAFF"],
           },
           {
             id: "assign-services",
             label: "Assign Services",
-            link: `/shops/${activeShop?.id ?? "active"}/services/assign`,
+            link: `/shops/${shopIdFromPath ?? activeShop?.id ?? "active"}/services/assign`,
             roles: ["BUSINESS", "MANAGER"],
           },
         ],
@@ -163,19 +152,19 @@ export default function Sidebar({ role, name }: { role: Role; name?: string }) {
           {
             id: "calendar",
             label: "Calendar",
-            link: `/shops/${activeShop?.id ?? "active"}/calendar`,
+            link: `/shops/${shopIdFromPath ?? activeShop?.id ?? "active"}/calendar`,
             roles: ["BUSINESS", "MANAGER", "STAFF"],
           },
           {
             id: "all-bookings",
             label: "All Bookings",
-            link: `/shops/${activeShop?.id ?? "active"}/bookings`,
+            link: `/shops/${shopIdFromPath ?? activeShop?.id ?? "active"}/bookings`,
             roles: ["BUSINESS", "MANAGER"],
           },
           {
             id: "add-booking",
             label: "Add Booking",
-            link: `/shops/${activeShop?.id ?? "active"}/bookings/create`,
+            link: `/shops/${shopIdFromPath ?? activeShop?.id ?? "active"}/bookings/create`,
             roles: ["BUSINESS", "MANAGER"],
           },
         ],
@@ -188,13 +177,13 @@ export default function Sidebar({ role, name }: { role: Role; name?: string }) {
           {
             id: "shop-items",
             label: "All Items",
-            link: `/shops/${activeShop?.id ?? "active"}/inventory`,
+            link: `/shops/${shopIdFromPath ?? activeShop?.id ?? "active"}/inventory`,
             roles: ["BUSINESS", "MANAGER"],
           },
           {
             id: "add-item",
             label: "Add Item",
-            link: `/shops/${activeShop?.id ?? "active"}/inventory/create`,
+            link: `/shops/${shopIdFromPath ?? activeShop?.id ?? "active"}/inventory/create`,
             roles: ["BUSINESS", "MANAGER"],
           },
         ],
@@ -207,13 +196,13 @@ export default function Sidebar({ role, name }: { role: Role; name?: string }) {
           {
             id: "settings",
             label: "General",
-            link: `/shops/${activeShop?.id ?? "active"}/settings`,
+            link: `/shops/${shopIdFromPath ?? activeShop?.id ?? "active"}/settings`,
             roles: ["BUSINESS", "MANAGER"],
           },
         ],
       },
     ],
-    [activeShop?.id]
+    [activeShop?.id, shopIdFromPath]
   );
 
   // ---------------------
@@ -222,13 +211,16 @@ export default function Sidebar({ role, name }: { role: Role; name?: string }) {
   const groups = isShopSelected ? shopGroups : globalGroups;
 
   const visibleGroups = groups
-    .filter((g) => g.roles.includes(role))
+    .filter((g) => g.roles.includes(user.role))
     .map((g) => ({
       ...g,
-      children: g.children.filter((c) => c.roles.includes(role)),
+      children: g.children.filter((c) => c.roles.includes(user.role)),
     }))
     .filter((g) => g.children.length);
 
+  // ---------------------
+  // Auto-open group for current path
+  // ---------------------
   useEffect(() => {
     const matchingGroup = visibleGroups.find((group) =>
       group.children.some((c) => currentPath === c.link)
@@ -241,15 +233,31 @@ export default function Sidebar({ role, name }: { role: Role; name?: string }) {
     }
   }, [currentPath, visibleGroups]);
 
+  // ---------------------
+  // Sync activeShop with URL or localStorage
+  // ---------------------
+  useEffect(() => {
+    const id = shopIdFromPath ?? Number(localStorage.getItem("activeShop"));
+    const found = user.shops?.find((s) => s.id === id) ?? null;
+    setActiveShop(found);
+    if (found) localStorage.setItem("activeShop", String(found.id));
+    else localStorage.removeItem("activeShop");
+  }, [shopIdFromPath, user.shops]);
 
+  // ---------------------
+  // User initials
+  // ---------------------
   const initials =
-    (name ?? "")
+    (user.name ?? "")
       .trim()
       .split(/\s+/)
       .slice(0, 2)
       .map((p) => p[0]?.toUpperCase() ?? "")
       .join("") || "U";
 
+  // ---------------------
+  // RENDER
+  // ---------------------
   return (
     <>
       <button
@@ -269,72 +277,116 @@ export default function Sidebar({ role, name }: { role: Role; name?: string }) {
         className={`sidebar ${sidebarOpen ? "open" : ""}`}
       >
         <div className="sidebar-head">
-          <div className="brand">
-            {isShopSelected ? activeShop?.name ?? "Shop" : "Dashboard"}
-          </div>
+          {isShopSelected && activeShop ? (
+            <div className="brand shop-mode">
+              <button
+                className="back-arrow"
+                onClick={() => {
+                  setActiveShop(null);
+                  localStorage.removeItem("activeShop");
+                  navigate("/overview");
+                }}
+              >
+                ←
+              </button>
+              <span className="shop-name">{activeShop.name}</span>
+            </div>
+          ) : (
+            <div className="brand">Dashboard</div>
+          )}
         </div>
 
         <nav className="nav" aria-label="Primary">
-          <NavLink
-            key={"overview"}
-            to={"/overview"}
-            end
-            className={({ isActive }) => `link ${isActive ? "current" : ""}`}
+          <div
+            className={`sidebar-slider ${isShopSelected ? "shop-mode" : "global-mode"}`}
           >
-            Overview
-          </NavLink>
-          {visibleGroups.map((group) => {
-            const expanded = !!open[group.id];
-            const groupActive = group.children.some(
-              (c) => currentPath === c.link
-            );
+            <div className="sidebar-panel global">
+              <NavLink
+                key={"overview"}
+                to={`/overview`}
+                end
+                className={({ isActive }) =>
+                  `link ${isActive ? "current" : ""}`
+                }
+              >
+                Overview
+              </NavLink>
 
-            return (
-              <div key={group.id} className="grp">
-                <button
-                  className={`grp-btn`}
-                  onClick={() => toggleGroup(group.id)}
-                  aria-expanded={expanded}
-                  aria-controls={`sect-${group.id}`}
-                  type="button"
-                >
-                  <span className="label">{group.label}</span>
-                </button>
-
-                <div id={`sect-${group.id}`} className={`panel`}>
-                  {group.children.map((child) => (
-                    <NavLink
-                      key={child.id}
-                      to={child.link}
-                      end
-                      className={({ isActive }) =>
-                        `link ${isActive ? "current" : ""}`
-                      }
-                    >
-                      {child.label}
-                    </NavLink>
-                  ))}
+              {globalGroups.map((group) => (
+                <div key={group.id} className="grp">
+                  <button className="grp-btn">
+                    <span className="label">{group.label}</span>
+                  </button>
+                  <div className="panel">
+                    {group.children.map((child) => (
+                      <NavLink
+                        key={child.id}
+                        to={child.link!}
+                        end
+                        className={({ isActive }) =>
+                          `link ${isActive ? "current" : ""}`
+                        }
+                      >
+                        {child.label}
+                      </NavLink>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </nav>
-          <div className="sidebar-footer">
-            <div className="profile">
-              <div className="avatar" aria-hidden="true">
-                {initials}
-              </div>
-              <div className="info">
-                <div className="name" title={name}>
-                  {name ?? "User"}
-                </div>
-                <div className="role">{role}</div>
-              </div>
+              ))}
             </div>
-            <button onClick={logout} className="nav-btn logout-btn">
-              Logout
-            </button>
+
+            <div className="sidebar-panel shop">
+            <NavLink
+                key={"shop-overview"}
+                to={`/shops/${shopIdFromPath ?? activeShop?.id ?? "active"}/overview`}
+                end
+                className={({ isActive }) =>
+                  `link ${isActive ? "current" : ""}`
+                }
+              >
+                Overview
+              </NavLink>
+              {shopGroups.map((group) => (
+                <div key={group.id} className="grp">
+                  <button className="grp-btn">
+                    <span className="label">{group.label}</span>
+                  </button>
+                  <div className="panel">
+                    {group.children.map((child) => (
+                      <NavLink
+                        key={child.id}
+                        to={child.link!}
+                        end
+                        className={({ isActive }) =>
+                          `link ${isActive ? "current" : ""}`
+                        }
+                      >
+                        {child.label}
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
+        </nav>
+
+        <div className="sidebar-footer">
+          <div className="profile">
+            <div className="avatar" aria-hidden="true">
+              {initials}
+            </div>
+            <div className="info">
+              <div className="name" title={user.name}>
+                {user.name ?? "User"}
+              </div>
+              <div className="role">{user.role}</div>
+            </div>
+          </div>
+          <button onClick={logout} className="nav-btn logout-btn">
+            Logout
+          </button>
+        </div>
       </aside>
     </>
   );

@@ -41,6 +41,7 @@ import NotFound from "./pages/NotFound/NotFound";
 
 import ProtectedLayout from "./layouts/ProtectedLayout/ProtectedLayout.tsx";
 import PublicLayout from "./layouts/PublicLayout/PublicLayout.tsx";
+import ShopOverview from "./pages/Shops/ShopOverview.tsx";
 
 export default function Router() {
 
@@ -56,6 +57,7 @@ export default function Router() {
           <Route path="/overview" element={<Overview />} />
           <Route path="/shops" element={<AllShops />} />
           <Route path="/shops/create" element={<CreateShop />} />
+          <Route path="/shops/:shopId/overview" element={<ShopOverview />} />
           <Route path="/team" element={<AllTeam />} />
           <Route path="/team/invite" element={<Invite />} />
           <Route path="/services" element={<ServiceLibrary />} />

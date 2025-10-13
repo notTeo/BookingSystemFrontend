@@ -27,6 +27,7 @@ export async function getCurrentUser(): Promise<UserDTO | null> {
       role: apiUser.role,
       active: apiUser.active,
       bookable: apiUser.bookable,
+      shops: apiUser.shops
     };
   } catch (err) {
     console.error("getCurrentUser() failed:", err);
