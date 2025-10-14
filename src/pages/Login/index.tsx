@@ -1,34 +1,36 @@
 import { useState } from "react";
-import "./Login.css"
+import "./Login.css";
+import { loginRequest } from "../../api/auth";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("nick@gmial.com");
+  const [email, setEmail] = useState("nick@gmail.com");
   const [password, setPassword] = useState("nick123");
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
-    fetch("http://localhost:4000/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Backend response:", data);
+    loginRequest(email, password)
+      .then((res) => {
+        console.log("Backend response:", res);
 
-        const payload = data.data?.data;
-        if (!payload || !payload.accessToken) {
+        const { accessToken, refreshToken, user } = res.data.result;
+
+        if (!accessToken) {
           alert("No token received from server");
           return;
         }
-        localStorage.setItem("token", payload.accessToken);
-        localStorage.setItem("refreshToken", payload.refreshToken);
-        window.location.href = "/overview";
+
+        localStorage.setItem("token", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.removeItem("activeShop");
+
         console.log("Token saved:", localStorage.getItem("token"));
+        window.location.href = "/overview";
       })
       .catch((err) => {
         console.error("Login error:", err);
+        alert("Login failed. Check console for details.");
       });
   };
 

@@ -5,7 +5,6 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Sidebar({ user }: { user: UserDTO }) {
-  const [open, setOpen] = useState<Record<string, boolean>>({});
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigate = useNavigate();
@@ -17,19 +16,13 @@ export default function Sidebar({ user }: { user: UserDTO }) {
   }>(null);
   const isShopSelected = !!activeShop;
 
-  // ✅ must come BEFORE match
   const { pathname: currentPath } = useLocation();
 
-  // ✅ extract shop id from URL
   const match = currentPath.match(/\/shops\/(\d+)/);
   const shopIdFromPath = match ? Number(match[1]) : null;
 
-  const toggleGroup = (id: string) => setOpen((s) => ({ ...s, [id]: !s[id] }));
   const toggleSidebar = () => setSidebarOpen((s) => !s);
 
-  // ---------------------
-  // GLOBAL GROUPS
-  // ---------------------
   const globalGroups = useMemo<Group[]>(
     () => [
       {
@@ -101,9 +94,6 @@ export default function Sidebar({ user }: { user: UserDTO }) {
     [user]
   );
 
-  // ---------------------
-  // SHOP GROUPS
-  // ---------------------
   const shopGroups = useMemo<Group[]>(
     () => [
       {
@@ -205,37 +195,6 @@ export default function Sidebar({ user }: { user: UserDTO }) {
     [activeShop?.id, shopIdFromPath]
   );
 
-  // ---------------------
-  // Pick which group set to render
-  // ---------------------
-  const groups = isShopSelected ? shopGroups : globalGroups;
-
-  const visibleGroups = groups
-    .filter((g) => g.roles.includes(user.role))
-    .map((g) => ({
-      ...g,
-      children: g.children.filter((c) => c.roles.includes(user.role)),
-    }))
-    .filter((g) => g.children.length);
-
-  // ---------------------
-  // Auto-open group for current path
-  // ---------------------
-  useEffect(() => {
-    const matchingGroup = visibleGroups.find((group) =>
-      group.children.some((c) => currentPath === c.link)
-    );
-    if (matchingGroup) {
-      setOpen((prev) => {
-        if (prev.hasOwnProperty(matchingGroup.id)) return prev;
-        return { ...prev, [matchingGroup.id]: true };
-      });
-    }
-  }, [currentPath, visibleGroups]);
-
-  // ---------------------
-  // Sync activeShop with URL or localStorage
-  // ---------------------
   useEffect(() => {
     const id = shopIdFromPath ?? Number(localStorage.getItem("activeShop"));
     const found = user.shops?.find((s) => s.id === id) ?? null;
@@ -244,9 +203,6 @@ export default function Sidebar({ user }: { user: UserDTO }) {
     else localStorage.removeItem("activeShop");
   }, [shopIdFromPath, user.shops]);
 
-  // ---------------------
-  // User initials
-  // ---------------------
   const initials =
     (user.name ?? "")
       .trim()
@@ -255,9 +211,6 @@ export default function Sidebar({ user }: { user: UserDTO }) {
       .map((p) => p[0]?.toUpperCase() ?? "")
       .join("") || "U";
 
-  // ---------------------
-  // RENDER
-  // ---------------------
   return (
     <>
       <button
@@ -336,7 +289,7 @@ export default function Sidebar({ user }: { user: UserDTO }) {
             </div>
 
             <div className="sidebar-panel shop">
-            <NavLink
+              <NavLink
                 key={"shop-overview"}
                 to={`/shops/${shopIdFromPath ?? activeShop?.id ?? "active"}/overview`}
                 end
@@ -383,7 +336,14 @@ export default function Sidebar({ user }: { user: UserDTO }) {
               <div className="role">{user.role}</div>
             </div>
           </div>
-          <button onClick={logout} className="nav-btn logout-btn">
+          <button
+            onClick={() => {
+              setActiveShop(null);
+              localStorage.removeItem("activeShop");
+              logout();
+            }}
+            className="nav-btn logout-btn"
+          >
             Logout
           </button>
         </div>

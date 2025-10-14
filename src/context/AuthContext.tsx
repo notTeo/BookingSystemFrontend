@@ -1,13 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { getCurrentUser } from "../api/user";
 import type { UserDTO } from "../types/user";
-
-type AuthContextType = {
-  user: UserDTO | null;
-  loading: boolean;
-  refreshUser: () => Promise<void>;
-  logout: () => void;
-};
+import type {AuthContextType} from  "../types/auth"
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

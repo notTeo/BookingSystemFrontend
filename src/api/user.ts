@@ -1,13 +1,11 @@
 import type { UserDTO } from "../types/user";  
 
-const API_BASE = "http://localhost:4000";
-
 export async function getCurrentUser(): Promise<UserDTO | null> {
   const token = localStorage.getItem("token");
   if (!token) return null;
 
   try {
-    const res = await fetch(`${API_BASE}/me`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -18,7 +16,7 @@ export async function getCurrentUser(): Promise<UserDTO | null> {
     }
 
     const json = await res.json();
-    const apiUser = json.data.data ?? json.data; // handle both formats
+    const apiUser = json.data.data ?? json.data;
 
     return {
       id: apiUser.id,

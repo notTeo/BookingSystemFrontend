@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import App from "./App";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 
@@ -42,6 +41,7 @@ import NotFound from "./pages/NotFound/NotFound";
 import ProtectedLayout from "./layouts/ProtectedLayout/ProtectedLayout.tsx";
 import PublicLayout from "./layouts/PublicLayout/PublicLayout.tsx";
 import ShopOverview from "./pages/Shops/ShopOverview.tsx";
+import MainPage from "./pages/MainPage/MainPage.tsx";
 
 export default function Router() {
 
@@ -49,7 +49,7 @@ export default function Router() {
     <BrowserRouter>
       <Routes>
         <Route element={<PublicLayout />}>  
-          <Route path="/" element={<App />} />  
+          <Route path="/" element={<MainPage />} />  
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Route>
