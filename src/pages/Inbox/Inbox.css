@@ -1,0 +1,158 @@
+.inbox-page {
+    max-width: 600px;
+    margin: 60px auto;
+    background: #111;
+    border: 1px solid #1b1b1b;
+    border-radius: 10px;
+    padding: 24px 28px;
+    color: #eee;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+    font-family: "Poppins", sans-serif;
+  }
+  
+  .inbox-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #fff;
+  }
+  
+  .inbox-loading,
+  .inbox-empty {
+    text-align: center;
+    color: #aaa;
+    font-size: 15px;
+    margin-top: 20px;
+  }
+  
+  .inbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  /* === Invite Card === */
+  .invite-card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .invite-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #ccc;
+    line-height: 1.4;
+  }
+  
+  .label {
+    color: #888;
+    margin-right: 4px;
+    font-weight: 500;
+  }
+  
+  .invite-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .accept-btn,
+  .decline-btn {
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.1s ease;
+  }
+  
+  .accept-btn {
+    background: #4f9cff;
+    color: #fff;
+  }
+  
+  .accept-btn:hover {
+    background: #66adff;
+  }
+  
+  .decline-btn {
+    background: #1b1b1b;
+    border: 1px solid #2a2a2a;
+    color: #eee;
+  }
+  
+  .decline-btn:hover {
+    background: #ff5252;
+    border-color: #ff5252;
+    color: #fff;
+  }
+  
+  .accept-btn:active,
+  .decline-btn:active {
+    transform: scale(0.97);
+  }
+  
+  /* === Responsive === */
+  @media (max-width: 480px) {
+    .inbox-page {
+      margin: 40px 16px;
+      padding: 20px;
+    }
+  
+    .invite-card {
+      padding: 14px;
+    }
+  
+    .inbox-title {
+      font-size: 1.1rem;
+    }
+  }
+  
+  /* === Status color accents === */
+.status-pending {
+  border-left: 4px solid #4f9cff;
+}
+
+.status-accepted {
+  border-left: 4px solid #2ecc71;
+}
+
+.status-declined {
+  border-left: 4px solid #ff5252;
+}
+
+.status-expired {
+  border-left: 4px solid #888;
+}
+
+/* === Tabs === */
+.inbox-tabs {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.2rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  font-weight: 500;
+  color: #888;
+  cursor: pointer;
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+  transition: 0.2s;
+}
+
+.tab-btn.active {
+  color: #fff;
+  border-color: #4f9cff;
+}

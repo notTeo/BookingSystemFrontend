@@ -60,25 +60,85 @@
 }
 
 .sidebar-head {
-  padding: 14px;
-  font-size: 15px;
-  font-weight: 700;
-  border-bottom: 1px solid #1b1b1b;
+  position: relative;
+  overflow: hidden;
+  height: 56px;
+  background-color: #000;
+  border-bottom: 1px solid #1a1a1a;
+  padding: 0 18px;
+  display: flex;
+  justify-content: space-between;
+  color: #fff;
 }
 
+/* --- Fade animation for header content --- */
+.sidebar-head .brand {
+  opacity: 0;
+  position: absolute;
+  left: 18px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 56px;
+  transition: opacity 0.4s ease;
+}
+.sidebar-head .brand.active {
+  opacity: 1;
+  position: relative;
+}
+.sidebar-head .brand:not(.active) {
+  pointer-events: none;
+}
+
+.brand.shop-mode {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* <— key change */
+  width: 90%;
+  height: 100%;
+   /* optional, keeps small breathing space */
+}
+
+/* === BACK ARROW === */
+.back-arrow {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  transform: translateY(-2px);
+}
+.back-arrow:hover {
+  color: #fff;
+  transform: translateX(-2px);
+}
+
+/* === SHOP NAME === */
+.shop-name {
+  color: #fff;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================
+   NAV AREA
+   ========================= */
 .nav {
-  padding: 8px;
+  padding: 0px 8px;
   overflow-y: auto;
   scrollbar-gutter: stable;
   flex: 1;
   position: relative;
 }
-
-
-
-/* =========================
-   Simplified static sidebar
-   ========================= */
 
 /* Group title */
 .grp-btn {
@@ -95,8 +155,6 @@
 
 /* Section wrapper */
 .grp {
-  margin-bottom: 10px;
-  padding-bottom: 4px;
   border-bottom: 1px solid #1b1b1b;
 }
 
@@ -255,7 +313,9 @@
   }
 }
 
-
+/* =========================
+   Shop selector
+   ========================= */
 .shop-selector {
   width: 100%;
   background: #1a1a1a;
@@ -279,75 +339,14 @@
   color: #fff;
 }
 
-.sidebar-head {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0px 18px;
-  height: 56px; 
-  background-color: #000; /* solid black background */
-  color: #fff;
-  border-bottom: 1px solid #1a1a1a;
-}
-
-.brand {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #fff;
-}
-
-.brand.shop-mode {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 100%;
-}
-
-.back-arrow {
-  background: none;
-  border: none;
-  color: #aaa;
-  font-size: 1.6rem;
-  cursor: pointer;
-  transition: color 0.2s ease, transform 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  transform: translateY(-2px);
-}
-
-.back-arrow:hover {
-  color: #fff;
-  transform: translateX(-2px);
-}
-
-/* === SHOP NAME === */
-.shop-name {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #fff;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ----------------------------------
-   SLIDE TRANSITION (CAROUSEL STYLE)
----------------------------------- */
-/* .nav {
-  overflow-x: hidden;
-
-} */
-
+/* =========================
+   Sidebar slider (future)
+   ========================= */
 .sidebar-slider {
   position: relative;
   width: 100%;
   height: 100%;
 }
-
-/* Both panels stacked */
 .sidebar-panel {
   position: absolute;
   inset: 0;
@@ -355,15 +354,11 @@
   pointer-events: none;
   transition: opacity 0.35s ease;
 }
-
-/* Active panel fades in */
 .sidebar-slider.global-mode .global {
   opacity: 1;
   pointer-events: auto;
 }
-
 .sidebar-slider.shop-mode .shop {
   opacity: 1;
   pointer-events: auto;
 }
-

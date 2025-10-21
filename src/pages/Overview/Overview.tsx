@@ -14,7 +14,7 @@ export default function Overview() {
           <h2><strong>ID:</strong> {user.id}</h2>
           <h2><strong>Name:</strong> {user.name}</h2>
           <h2><strong>Email:</strong> {user.email}</h2>
-          <h2><strong>Role:</strong> {user.role}</h2>
+          <h2><strong>Subscription:</strong> {user.subscription}</h2>
           <h2><strong>Active:</strong> {user.active ? "Yes" : "No"}</h2>
           <h2><strong>Bookable:</strong> {user.bookable ? "Yes" : "No"}</h2>
         </div>

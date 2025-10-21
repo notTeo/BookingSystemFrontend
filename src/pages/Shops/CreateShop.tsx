@@ -1,18 +1,17 @@
 import { useMemo, useState } from "react";
 import { createShop } from "../../api/shop";
-import "./CreateShop.css"
-type Day =
-  | "MONDAY" | "TUESDAY" | "WEDNESDAY"
-  | "THURSDAY" | "FRIDAY" | "SATURDAY" | "SUNDAY";
+import type { Day, HourRow } from "../../types/shop";
+import "./CreateShop.css";
 
-type HourRow = {
-  dayOfWeek: Day;
-  openTime: string;
-  closeTime: string;
-  isClosed: boolean;
-};
-
-const DAYS: Day[] = ["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY","SUNDAY"];
+const DAYS: Day[] = [
+  "MONDAY",
+  "TUESDAY",
+  "WEDNESDAY",
+  "THURSDAY",
+  "FRIDAY",
+  "SATURDAY",
+  "SUNDAY",
+];
 
 export default function CreateShopWizard() {
   const [step, setStep] = useState<number>(0);
@@ -33,7 +32,7 @@ export default function CreateShopWizard() {
   const [error, setError] = useState<string>("");
 
   const canGoNext = useMemo(() => {
-    if (step === 0) return name.trim().length > 0; 
+    if (step === 0) return name.trim().length > 0;
     if (step === 1) {
       return hours.every((h) => {
         if (h.isClosed) return true;
@@ -52,14 +51,15 @@ export default function CreateShopWizard() {
   const goPrev = () => setStep((s) => Math.max(s - 1, 0));
 
   const setHourAt = (idx: number, patch: Partial<HourRow>) => {
-    setHours((prev) => prev.map((row, i) => (i === idx ? { ...row, ...patch } : row)));
+    setHours((prev) =>
+      prev.map((row, i) => (i === idx ? { ...row, ...patch } : row))
+    );
   };
 
   const handleSubmit = async () => {
     setError("");
     setSubmitting(true);
     try {
-      // Your backend currently uses: (name, openingHours)
       await createShop(
         name,
         hours.map((h) => ({
@@ -68,13 +68,12 @@ export default function CreateShopWizard() {
           closeTime: h.isClosed ? null : h.closeTime,
           isClosed: h.isClosed,
         }))
-        // If you add address support in the backend,
-        // extend your API call to include it.
       );
-
-      window.location.href = "/shops"; // go to My Shops after success
+        
+      window.location.href = "/shops";
+      window.location.reload
     } catch (e: any) {
-      setError(e?.message || "Failed to create shop");
+      setError(e?.message );
     } finally {
       setSubmitting(false);
     }
@@ -97,7 +96,9 @@ export default function CreateShopWizard() {
             <h2 className="card-title">Shop Details</h2>
             <div className="form-grid">
               <div className="form-field">
-                <label htmlFor="shop-name">Name <span className="req">*</span></label>
+                <label htmlFor="shop-name">
+                  Name <span className="req">*</span>
+                </label>
                 <input
                   id="shop-name"
                   type="text"
@@ -143,7 +144,9 @@ export default function CreateShopWizard() {
                       type="time"
                       value={row.openTime}
                       disabled={row.isClosed}
-                      onChange={(e) => setHourAt(idx, { openTime: e.target.value })}
+                      onChange={(e) =>
+                        setHourAt(idx, { openTime: e.target.value })
+                      }
                     />
                   </div>
 
@@ -152,7 +155,9 @@ export default function CreateShopWizard() {
                       type="time"
                       value={row.closeTime}
                       disabled={row.isClosed}
-                      onChange={(e) => setHourAt(idx, { closeTime: e.target.value })}
+                      onChange={(e) =>
+                        setHourAt(idx, { closeTime: e.target.value })
+                      }
                     />
                   </div>
 
@@ -160,7 +165,9 @@ export default function CreateShopWizard() {
                     <input
                       type="checkbox"
                       checked={row.isClosed}
-                      onChange={() => setHourAt(idx, { isClosed: !row.isClosed })}
+                      onChange={() =>
+                        setHourAt(idx, { isClosed: !row.isClosed })
+                      }
                     />
                   </div>
                 </div>
@@ -169,7 +176,8 @@ export default function CreateShopWizard() {
 
             {!canGoNext && (
               <p className="hint">
-                For open days, set valid times (Open must be earlier than Close).
+                For open days, set valid times (Open must be earlier than
+                Close).
               </p>
             )}
           </section>
@@ -241,7 +249,15 @@ export default function CreateShopWizard() {
   );
 }
 
-function StepDot({ label, active, done }: { label: string; active: boolean; done: boolean }) {
+function StepDot({
+  label,
+  active,
+  done,
+}: {
+  label: string;
+  active: boolean;
+  done: boolean;
+}) {
   return (
     <div className={`step-dot ${active ? "active" : ""} ${done ? "done" : ""}`}>
       <span className="dot" />

@@ -6,6 +6,9 @@ import RegisterPage from "./pages/Register";
 // Dashboard
 import Overview from "./pages/Overview/Overview";
 
+//Inbox
+import Inbox from "./pages/Inbox/Inbox"
+
 // Shops
 import AllShops from "./pages/Shops/AllShops";
 import CreateShop from "./pages/Shops/CreateShop";
@@ -55,12 +58,13 @@ export default function Router() {
         </Route>
         <Route element={<ProtectedLayout />}>
           <Route path="/overview" element={<Overview />} />
+          <Route path="/inbox" element={<Inbox />} />
           <Route path="/shops" element={<AllShops />} />
           <Route path="/shops/create" element={<CreateShop />} />
-          <Route path="/shops/:shopId/overview" element={<ShopOverview />} />
-          <Route path="/team" element={<AllTeam />} />
-          <Route path="/team/invite" element={<Invite />} />
-          <Route path="/services" element={<ServiceLibrary />} />
+          <Route path="/shops/:name/overview" element={<ShopOverview />} />
+          <Route path="/shops/:name/team" element={<AllTeam />} />
+          <Route path="/shops/:name/team/invite" element={<Invite />} />
+          <Route path="/shops/:name/services" element={<ServiceLibrary />} />
           <Route path="/services/assign" element={<Assign />} />
           <Route path="/customers" element={<AllCustomers />} />
           <Route path="/customers/create" element={<AddCustomer />} />
