@@ -24,7 +24,6 @@ export async function getCurrentUser(): Promise<UserDTO | null> {
       email: apiUser.email,
       subscription: apiUser.subscription,
       active: apiUser.active,
-      bookable: apiUser.bookable,
       shops: apiUser.shops,
     };
   } catch (err) {
@@ -32,6 +31,47 @@ export async function getCurrentUser(): Promise<UserDTO | null> {
     return null;
   }
 }
+
+export interface UpdateUserPayload {
+  name?: string;
+  email?: string;
+  password?: string;
+}
+
+
+export async function updateUser(payload: UpdateUserPayload): Promise<UserDTO> {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/me/update`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err || "Failed to update user");
+  }
+
+  const data = await res.json();
+  return data.data as UserDTO;
+}
+
+export async function deleteUser(): Promise<void> {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) throw new Error("Failed to delete user");
+}
+
 
 export async function getInbox() {
   const token = localStorage.getItem("token");

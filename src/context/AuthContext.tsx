@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { getCurrentUser } from "../api/user";
 import type { UserDTO } from "../types/user";
-import type {AuthContextType} from  "../types/auth"
+import type { AuthContextType } from "../types/auth";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -31,7 +31,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
-    // if you prefer navigation instead of hard redirect, use useNavigate where needed
     window.location.href = "/login";
   };
 

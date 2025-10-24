@@ -1,7 +1,212 @@
-.page-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+
+
+/* ------------------------------
+   Page Layout
+------------------------------ */
+body {
+  background: var(--bg-main);
+  color: var(--text);
+  font-family: "Poppins", sans-serif;
+}
+
+.account-container {
+  max-width: 780px;
+  margin: 60px auto;
+  padding: 0 20px 80px;
+}
+
+.account-container h1 {
+  font-size: 1.9rem;
+  font-weight: 600;
   text-align: center;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 40px;
+}
+
+/* ------------------------------
+   Vertical Layout
+------------------------------ */
+.settings-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ------------------------------
+   Card Styling
+------------------------------ */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 30px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+  transition: all var(--transition);
+}
+
+.card:hover {
+  background: var(--bg-hover);
+  border-color: #3a3a3a;
+}
+
+.card h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+  margin-bottom: 18px;
+}
+
+/* ------------------------------
+   Labels
+------------------------------ */
+.card label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 16px;
+  margin-bottom: 4px;
+}
+
+/* ------------------------------
+   Inputs & Selects
+------------------------------ */
+.card input,
+.card select {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all var(--transition);
+  margin-top: 6px;
+}
+
+.card input:hover,
+.card select:hover {
+  background: #111;
+  border-color: #3a3a3a;
+}
+
+.card input:focus,
+.card select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.12);
+}
+
+/* ------------------------------
+   Buttons
+------------------------------ */
+.card button {
+  margin-top: 22px;
+  padding: 12px 18px;
+  background: var(--accent);
+  color: #000;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  width: 100%;
+  transition: all var(--transition);
+}
+
+.card button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ------------------------------
+   Checkbox (Preferences)
+------------------------------ */
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  border-radius: 5px;
+}
+
+/* ------------------------------
+   Danger Zone
+------------------------------ */
+.card.danger {
+  background: #1a0f0f;
+  border: 1px solid rgba(231, 76, 60, 0.4);
+}
+
+.card.danger h2 {
+  color: var(--danger);
+}
+
+.card.danger p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+.delete-btn {
+  margin-top: 20px;
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  width: 100%;
+}
+
+.delete-btn:hover {
+  background: var(--danger-hover);
+}
+
+/* ------------------------------
+   Status message
+------------------------------ */
+.status {
+  margin-top: 28px;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.status.success {
+  color: #2ecc71;
+}
+
+.status.error {
+  color: #e74c3c;
+}
+
+/* ------------------------------
+   Responsive
+------------------------------ */
+@media (max-width: 700px) {
+  .card {
+    padding: 24px 20px;
+  }
 }

@@ -1,4 +1,7 @@
+import type { ShopDTO } from "./shop";
+
 export const Roles = ["OWNER", "MANAGER", "STAFF", "NONE"] as const;
+
 export const Subscriptions = ["MEMBER", "STARTER", "PRO"] as const;
 
 export type Role = typeof Roles[number];
@@ -8,14 +11,11 @@ export interface UserDTO {
   id: number;
   name: string;
   email: string;
-  subscription: Subscription; 
+  subscription?: "MEMBER" | "STARTER" | "PRO";
   active: boolean;
-  bookable: boolean;
-  shops?: {
-    id: number;
-    name: string;
-    role: Role;
-  }[];
+  shops: (ShopDTO & { role: Role })[]; // user’s memberships + role inside each
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export const SUBS = {
@@ -31,6 +31,7 @@ export type Item = {
   link?: string;
   roles?: readonly Role[];      // optional, used for shop-specific sections
   subs: readonly Subscription[]; // literal-safe (using as const)
+  onClick?: any;
 };
 
 export type Group = {

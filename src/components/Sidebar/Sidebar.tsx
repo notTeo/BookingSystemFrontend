@@ -30,27 +30,23 @@ export default function Sidebar({ user }: { user: UserDTO }) {
   // ------------------------------
 
   useEffect(() => {
-    const idFromUrl = shopIdFromPath; // this now holds the name
-    const idFromStorage = localStorage.getItem("activeShop");
-
+    const storedId = localStorage.getItem("activeShopId");
     if (!user.shops || user.shops.length === 0) return;
 
-    const target = idFromUrl ?? idFromStorage;
-    if (!target) {
+    if (!storedId) {
       setActiveShop(null);
       return;
     }
 
-    // Match by shop name instead of ID
-    const found = user.shops.find((s) => s.name === target);
+    // Match by ID instead of name
+    const found = user.shops.find((s) => String(s.id) === storedId);
     if (found) {
       setActiveShop({ id: found.id, name: found.name, role: found.role });
-      localStorage.setItem("activeShop", found.name); // keep same key
     } else {
       setActiveShop(null);
-      localStorage.removeItem("activeShop");
+      localStorage.removeItem("activeShopId");
     }
-  }, [shopIdFromPath, user.shops]);
+  }, [activeShop?.id, activeShop?.name]);
 
   const currentRole: Role = activeShop?.role ?? "NONE";
 
@@ -101,13 +97,17 @@ export default function Sidebar({ user }: { user: UserDTO }) {
               ]
             : []),
 
-          // then map actual shops
           ...(Array.isArray(user?.shops)
             ? user.shops.map((s) => ({
-                id: `shop-${s.name}`,
+                id: `shop-${s.id}`,
                 label: s.name,
-                link: `/shops/${s.name}/overview`,
+                link: `/shops/${encodeURIComponent(s.name)}/overview`,
                 subs: SUBS.ALL,
+                onClick: () => {
+                  setActiveShop({ id: s.id, name: s.name, role: s.role });
+                  localStorage.setItem("activeShopId", String(s.id)); // store ID for reloads
+                  localStorage.setItem("activeShopName", s.name); // optional cosmetic storage
+                },
               }))
             : []),
           {
@@ -146,13 +146,13 @@ export default function Sidebar({ user }: { user: UserDTO }) {
       // ACCOUNT SETTINGS (BOTTOM)
       // ---------------------------
       {
-        id: "account",
-        label: "Account",
+        id: "settings",
+        label: "Settings",
         subs: SUBS.ALL,
         children: [
           {
-            id: "settings",
-            label: "Settings",
+            id: "account",
+            label: "Account",
             link: "/settings/account",
             subs: SUBS.ALL,
           },
@@ -168,100 +168,97 @@ export default function Sidebar({ user }: { user: UserDTO }) {
     [user]
   );
 
-// ------------------------------
-// SHOP GROUPS
-// ------------------------------
-const shopGroups = useMemo<Group[]>(() => {
-  const shopSafeName =
-    activeShop?.name
+  // ------------------------------
+  // SHOP GROUPS
+  // ------------------------------
+  const shopGroups = useMemo<Group[]>(() => {
+    const shopSafeName = activeShop?.name
       ? encodeURIComponent(activeShop.name)
       : shopIdFromPath
-      ? encodeURIComponent(shopIdFromPath)
-      : null;
+        ? encodeURIComponent(shopIdFromPath)
+        : null;
 
-  return [
-    {
-      id: "main",
-      label: "",
-      subs: SUBS.ALL,
-      children: [
-        {
-          id: "overview",
-          label: "Overview",
-          link: shopSafeName ? `/shops/${shopSafeName}/overview` : "#",
-          subs: SUBS.ALL,
-        },
-      ],
-    },
-    {
-      id: "operations",
-      label: "",
-      roles: ["OWNER", "MANAGER", "STAFF"],
-      subs: SUBS.ALL,
-      children: [
-        {
-          id: "bookings",
-          label: "Bookings",
-          link: shopSafeName ? `/shops/${shopSafeName}/bookings` : "#",
-          roles: ["OWNER", "MANAGER", "STAFF"],
-          subs: SUBS.ALL,
-        },
-        {
-          id: "calendar",
-          label: "Calendar",
-          link: shopSafeName ? `/shops/${shopSafeName}/calendar` : "#",
-          roles: ["OWNER", "MANAGER", "STAFF"],
-          subs: SUBS.ALL,
-        },
-        {
-          id: "services",
-          label: "Services",
-          link: shopSafeName ? `/shops/${shopSafeName}/services` : "#",
-          roles: ["OWNER", "MANAGER", "STAFF"],
-          subs: SUBS.ALL,
-        },
-        {
-          id: "inventory",
-          label: "Inventory",
-          link: shopSafeName ? `/shops/${shopSafeName}/inventory` : "#",
-          roles: ["OWNER", "MANAGER"],
-          subs: SUBS.STARTER,
-        },
-      ],
-    },
-    {
-      id: "management",
-      label: "",
-      roles: ["OWNER", "MANAGER"],
-      subs: SUBS.STARTER,
-      children: [
-        {
-          id: "team",
-          label: "Team",
-          link: shopSafeName ? `/shops/${shopSafeName}/team` : "#",
-          roles: ["OWNER", "MANAGER"],
-          subs: SUBS.STARTER,
-        },
-        {
-          id: "invite",
-          label: "Invite Member",
-          link: shopSafeName ? `/shops/${shopSafeName}/team/invite` : "#",
-          roles: ["OWNER", "MANAGER"],
-          subs: SUBS.STARTER,
-        },
-        {
-          id: "settings",
-          label: "Settings",
-          link: shopSafeName ? `/shops/${shopSafeName}/settings` : "#",
-          roles: ["OWNER", "MANAGER"],
-          subs: SUBS.ALL,
-        },
-      ],
-    },
-  ];
-}, [activeShop?.id, shopIdFromPath]);
-
-
+    return [
+      {
+        id: "main",
+        label: "",
+        subs: SUBS.ALL,
+        children: [
+          {
+            id: "overview",
+            label: "Overview",
+            link: shopSafeName ? `/shops/${shopSafeName}/overview` : "#",
+            subs: SUBS.ALL,
+          },
+        ],
+      },
+      {
+        id: "operations",
+        label: "",
+        roles: ["OWNER", "MANAGER", "STAFF"],
+        subs: SUBS.ALL,
+        children: [
+          {
+            id: "bookings",
+            label: "Bookings",
+            link: shopSafeName ? `/shops/${shopSafeName}/bookings` : "#",
+            roles: ["OWNER", "MANAGER", "STAFF"],
+            subs: SUBS.ALL,
+          },
+          {
+            id: "calendar",
+            label: "Calendar",
+            link: shopSafeName ? `/shops/${shopSafeName}/calendar` : "#",
+            roles: ["OWNER", "MANAGER", "STAFF"],
+            subs: SUBS.ALL,
+          },
+          {
+            id: "services",
+            label: "Services",
+            link: shopSafeName ? `/shops/${shopSafeName}/services` : "#",
+            roles: ["OWNER", "MANAGER", "STAFF"],
+            subs: SUBS.ALL,
+          },
+          {
+            id: "inventory",
+            label: "Inventory",
+            link: shopSafeName ? `/shops/${shopSafeName}/inventory` : "#",
+            roles: ["OWNER", "MANAGER"],
+            subs: SUBS.STARTER,
+          },
+        ],
+      },
+      {
+        id: "management",
+        label: "",
+        roles: ["OWNER", "MANAGER"],
+        subs: SUBS.STARTER,
+        children: [
+          {
+            id: "team",
+            label: "Team",
+            link: shopSafeName ? `/shops/${shopSafeName}/team` : "#",
+            roles: ["OWNER", "MANAGER"],
+            subs: SUBS.STARTER,
+          },
+          {
+            id: "invite",
+            label: "Invite Member",
+            link: shopSafeName ? `/shops/${shopSafeName}/team/invite` : "#",
+            roles: ["OWNER", "MANAGER"],
+            subs: SUBS.STARTER,
+          },
+          {
+            id: "settings",
+            label: "Settings",
+            link: shopSafeName ? `/shops/${shopSafeName}/settings` : "#",
+            roles: ["OWNER", "MANAGER"],
+            subs: SUBS.ALL,
+          },
+        ],
+      },
+    ];
+  }, [activeShop?.id, shopIdFromPath]);
 
   // ------------------------------
   // AVATAR INITIALS
@@ -304,7 +301,8 @@ const shopGroups = useMemo<Group[]>(() => {
               className="back-arrow"
               onClick={() => {
                 setActiveShop(null);
-                localStorage.removeItem("activeShop");
+                localStorage.removeItem("activeShopId");
+                localStorage.removeItem("activeShopName");
                 navigate("/overview");
               }}
             >
@@ -334,6 +332,7 @@ const shopGroups = useMemo<Group[]>(() => {
                             <NavLink
                               key={child.id}
                               to={child.link!}
+                              onClick={child.onClick}
                               end
                               className={({ isActive }) =>
                                 `link ${isActive ? "current" : ""}`
@@ -403,7 +402,8 @@ const shopGroups = useMemo<Group[]>(() => {
           <button
             onClick={() => {
               setActiveShop(null);
-              localStorage.removeItem("activeShop");
+              localStorage.removeItem("activeShopId");
+              localStorage.removeItem("activeShopName");
               logout();
             }}
             className="nav-btn logout-btn"

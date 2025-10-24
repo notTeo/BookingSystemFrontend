@@ -1,8 +1,10 @@
-import { useParams } from "react-router-dom";
 import "./ShopOverview.css";
-
+import { useShop } from "../../context/ShopContext";
+  
 export default function ShopOverview() {
-  const { shopId } = useParams<{ shopId: string }>();
+
+const { selectedShop } = useShop();
+
 
   // Example mock data — replace later with API calls
   const shopStats = {
@@ -16,7 +18,7 @@ export default function ShopOverview() {
     <div className="shop-overview">
       <header className="shop-header">
         <h1>Shop Overview</h1>
-        <p className="subtitle">Shop ID: {shopId}</p>
+        <p className="subtitle">Shop ID: {selectedShop?.id}</p>
       </header>
 
       <section className="stats-grid">
