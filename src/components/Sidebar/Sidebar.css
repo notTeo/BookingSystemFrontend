@@ -239,6 +239,7 @@
 }
 .role {
   font-size: 12px;
+  padding: 0;
   color: #a8a8a8;
   text-transform: uppercase;
   letter-spacing: 0.4px;

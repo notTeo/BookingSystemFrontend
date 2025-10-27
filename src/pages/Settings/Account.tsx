@@ -38,6 +38,11 @@ export default function Account() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  // 🔹 NEW – for delete modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
 
   // ---------------------------------
   // HANDLERS
@@ -108,17 +113,25 @@ export default function Account() {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to permanently delete your account?"
-    );
-    if (!confirmDelete) return;
+  // 🔹 NEW - actual delete logic
+  const confirmDeleteAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!deletePassword.trim()) return;
 
     try {
-      await deleteUser();
+      setDeleting(true);
+      await deleteUser(deletePassword);
+      alert("Account deleted successfully");
       logout();
     } catch (err) {
-      alert("Error deleting account");
+      setStatus({
+        type: "error",
+        msg: (err as Error).message || "Error deleting account",
+      });
+    } finally {
+      setDeleting(false);
+      setShowDeleteModal(false);
+      setDeletePassword("");
     }
   };
 
@@ -241,13 +254,59 @@ export default function Account() {
         <section className="card danger">
           <h2>Danger Zone</h2>
           <p>Deleting your account will remove all data permanently.</p>
-          <button className="delete-btn" onClick={handleDeleteAccount}>
+          <button
+            className="delete-btn"
+            onClick={() => setShowDeleteModal(true)}
+            disabled={deleting}
+          >
             Delete My Account
           </button>
         </section>
       </div>
 
       {status.msg && <p className={`status ${status.type}`}>{status.msg}</p>}
+
+      {showDeleteModal && (
+        <div className="delete-modal-overlay">
+          <div className="delete-modal">
+            <h3>Confirm Account Deletion</h3>
+            <p>
+              This action is permanent. Please enter your password to confirm.
+            </p>
+
+            <form onSubmit={confirmDeleteAccount}>
+              <input
+                type="password"
+                className="delete-input"
+                placeholder="Enter your password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                required
+              />
+
+              <div className="delete-actions">
+                <button
+                  type="submit"
+                  className="delete-confirm"
+                  disabled={deleting}
+                >
+                  {deleting ? "Deleting..." : "Confirm Delete"}
+                </button>
+                <button
+                  type="button"
+                  className="delete-cancel"
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setDeletePassword("");
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

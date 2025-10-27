@@ -8,7 +8,7 @@ export default function InviteUser() {
   const [message, setMessage] = useState("");
   const [inviteSent, setInviteSent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const shopId = Number(localStorage.getItem("activeShop"))
+  const shopId = Number(localStorage.getItem("activeShopId"))
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

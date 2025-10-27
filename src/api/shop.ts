@@ -1,3 +1,5 @@
+import type { GetShopOverviewResponse } from "../types/shop";
+
 export async function createShop(name: string, openingHours: any[]) {
   const token = localStorage.getItem("token");
   const res = await fetch(`${import.meta.env.VITE_API_URL}/shop/new`, {
@@ -32,4 +34,37 @@ export async function sendShopInvite(
 
   const json = await res.json();
   return json.data; 
+}
+
+
+export async function getShopOverview(shopId: number): Promise<GetShopOverviewResponse> {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("No auth token");
+
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/shop/${shopId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || "Failed to fetch overview");
+  return json.data;
+}
+
+export async function getShopTeam(shopId: number){
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("No auth token");
+
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/shop/${shopId}/team`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || "Failed to fetch shop team");
+  return json.data;
 }

@@ -1,24 +1,34 @@
 // src/layouts/ProtectedLayout.tsx
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import "./ProtectedLayout.css";
 import { useAuth } from "../../context/AuthContext";
+import { ShopProvider } from "../../context/ShopContext";
 
 export default function ProtectedLayout() {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
 
-  if (loading) return <div>Loading...</div>;
-  if (!user) {
-    window.location.href = "/login";
-    return null;
-  }
+  // Redirect if unauthenticated once auth finishes loading
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/login");
+    }
+  }, [loading, user, navigate]);
+
+  // 🧠 Prevent early rendering before auth is done
+  if (loading) return <div className="loading-screen">Loading...</div>;
+  if (!user) return null;
 
   return (
-    <div >
-      <Sidebar user={user}  />
-      <div className="with-sidebar">
-        <Outlet context={{ user }} />
+    <ShopProvider>
+      <div className="protected-layout">
+        <Sidebar user={user} />
+        <main className="with-sidebar">
+          <Outlet context={{ user }} />
+        </main>
       </div>
-    </div>
+    </ShopProvider>
   );
 }

@@ -35,7 +35,6 @@ export default function Router() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* ---------- PUBLIC ROUTES ---------- */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<MainPage />} />

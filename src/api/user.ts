@@ -60,16 +60,24 @@ export async function updateUser(payload: UpdateUserPayload): Promise<UserDTO> {
   return data.data as UserDTO;
 }
 
-export async function deleteUser(): Promise<void> {
+export async function deleteUser(password: string) {
   const token = localStorage.getItem("token");
+
   const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
     method: "DELETE",
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
+    body: JSON.stringify({ password }),
   });
 
-  if (!res.ok) throw new Error("Failed to delete user");
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to delete account");
+  }
+
+  return res.json();
 }
 
 
@@ -91,7 +99,6 @@ export async function getInbox() {
 
     const json = await res.json();
 
-    // Expecting backend response: { success: true, data: { received: [...], sent: [...] } }
     const { received = [], sent = [] } = json.data || {};
 
     return { received, sent };

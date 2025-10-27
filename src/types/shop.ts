@@ -55,3 +55,51 @@ export interface ShopContextType {
   setSelectedShop: (shop: ShopDTO | null) => void;
   loading: boolean;
 }
+
+
+export type BookingStatus = "PENDING" | "CONFIRMED" | "CANCELED" | "COMPLETED";
+
+export interface GetShopOverviewResponse {
+  success: boolean;
+  message: string;
+  data: {
+    shop: {
+      id: number;
+      name: string;
+      address: string | null;
+      ownerId: number;
+      createdAt: string;
+      updatedAt: string;
+    };
+    totalBookings: number;
+    activeServices: number;
+    teamMembers: number;
+    monthlyRevenue: number;
+    recentBookings: {
+      id: number;
+      clientName: string;
+      serviceName: string;
+      staffName: string;
+      date: string;
+      status: BookingStatus;
+    }[];
+  };
+}
+
+
+///
+export interface ShopTeamMember {
+  id: number;        // user id
+  name: string;
+  email: string;
+  role: Role;        // "OWNER" | "MANAGER" | "STAFF"
+  active: boolean;
+  joinedAt: string;  // ISO
+}
+
+export interface GetShopTeamResponse {
+  shop: Pick<ShopDTO, "id" | "name" | "ownerId">;
+  totalMembers: number;
+  activeMembers: number;
+  members: ShopTeamMember[];
+}

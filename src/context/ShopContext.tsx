@@ -1,79 +1,94 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { createContext, useContext, useEffect, useState } from "react";
+import type { ShopDTO } from "../types/shop";
+import type { Role } from "../types/user";
 import { useAuth } from "./AuthContext";
-import type { ShopDTO, Role } from "../types/user";
+import { getShopOverview } from "../api/shop";
 
-type ShopContextType = {
+interface ShopContextType {
   activeShop: ShopDTO | null;
   currentRole: Role;
-  loading: boolean;
-  setActiveShop: (shop: ShopDTO | null) => void;
-  clearActiveShop: () => void;
-};
+  selectShop: (shop: { id: number; name: string; role: Role }) => Promise<void>;
+  clearShop: () => void;
+  refreshShop: () => Promise<void>;
+}
 
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
 
 export const ShopProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
-  const location = useLocation();
-  const { slug } = useParams<{ slug?: string }>();
-
   const [activeShop, setActiveShop] = useState<ShopDTO | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [currentRole, setCurrentRole] = useState<Role>("NONE");
 
-  // --------------------------------------------
-  // Core logic: derive active shop from URL or storage
-  // --------------------------------------------
-  useEffect(() => {
-    if (!user?.shops?.length) return;
-
-    const slugFromUrl = slug ?? location.pathname.match(/\/shops\/([^/]+)/)?.[1];
-    const stored = localStorage.getItem("activeShop");
-
-    const target = slugFromUrl ?? stored;
-    if (!target) {
-      setActiveShop(null);
-      setLoading(false);
-      return;
+  // === Helpers for persistence ===
+  const loadFromStorage = () => {
+    try {
+      const data = localStorage.getItem("activeShop");
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
     }
+  };
 
-    const found = user.shops.find((s) => s.slug === target || s.name === target);
-    if (found) {
-      setActiveShop(found);
-      localStorage.setItem("activeShop", found.slug ?? found.name);
-    } else {
-      setActiveShop(null);
-      localStorage.removeItem("activeShop");
-    }
+  const saveToStorage = (shop: { id: number; name: string; role: Role }) => {
+    localStorage.setItem("activeShop", JSON.stringify(shop));
+  };
 
-    setLoading(false);
-  }, [slug, location.pathname, user]);
-
-  // --------------------------------------------
-  // Helper to clear selection
-  // --------------------------------------------
-  const clearActiveShop = () => {
-    setActiveShop(null);
+  const clearFromStorage = () => {
     localStorage.removeItem("activeShop");
   };
 
-  // --------------------------------------------
-  // Derived data
-  // --------------------------------------------
-  const currentRole: Role = useMemo(
-    () => activeShop?.role ?? "NONE",
-    [activeShop]
-  );
+  // === Select new shop ===
+  const selectShop = async (shop: { id: number; name: string; role: Role }) => {
+    saveToStorage(shop);
+    setCurrentRole(shop.role);
+    try {
+      const data = await getShopOverview(shop.id);
+      setActiveShop(data.data.shop);
+    } catch (err) {
+      console.error("Failed to load shop:", err);
+      setActiveShop(null);
+    }
+  };
+
+  // === Clear current shop ===
+  const clearShop = () => {
+    setActiveShop(null);
+    setCurrentRole("NONE");
+    clearFromStorage();
+  };
+
+  // === Refresh (for reload or auth change) ===
+  const refreshShop = async () => {
+    const stored = loadFromStorage();
+    if (!stored || !user) {
+      return;
+    }
+
+    // make sure user still has access
+    const membership = user.shops.find((s) => s.id === stored.id);
+    if (!membership) {
+      clearShop();
+      return;
+    }
+
+    try {
+      const data = await getShopOverview(stored.id);
+      setActiveShop(data.data.shop);
+      setCurrentRole(membership.role);
+    } catch (err) {
+      console.error("Failed to refresh shop:", err);
+      clearShop();
+    }
+  };
+
+  // === Restore on login/change ===
+  useEffect(() => {
+    refreshShop();
+  }, [user]);
 
   return (
     <ShopContext.Provider
-      value={{
-        activeShop,
-        currentRole,
-        loading,
-        setActiveShop,
-        clearActiveShop,
-      }}
+      value={{ activeShop, currentRole, selectShop, clearShop, refreshShop }}
     >
       {children}
     </ShopContext.Provider>

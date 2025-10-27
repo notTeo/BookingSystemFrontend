@@ -1,112 +1,55 @@
-import { useEffect, useMemo, useState } from "react";
-import type { Group, UserDTO, Role } from "../../types/user";
+import { useMemo, useState } from "react";
+import type { Group, UserDTO } from "../../types/user";
 import { SUBS } from "../../types/user";
 import "./Sidebar.css";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useShop } from "../../context/ShopContext"; 
 
 export default function Sidebar({ user }: { user: UserDTO }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeShop, setActiveShop] = useState<null | {
-    id: number;
-    name: string;
-    role: Role;
-  }>(null);
   const navigate = useNavigate();
   const { logout } = useAuth();
 
-  const { pathname: currentPath } = useLocation();
-  const match = currentPath.match(/\/shops\/([^/]+)/);
-  const shopIdFromPath = match ? decodeURIComponent(match[1]) : null;
+  const { activeShop, currentRole, selectShop, clearShop } = useShop();
 
   const toggleSidebar = () => setSidebarOpen((s) => !s);
 
   const subscription = user.subscription ?? "MEMBER";
-  const hasSubscription = !!user.subscription;
   const isShopSelected = !!activeShop;
-
-  // ------------------------------
-  // ACTIVE SHOP HANDLING (stable)
-  // ------------------------------
-
-  useEffect(() => {
-    const storedId = localStorage.getItem("activeShopId");
-    if (!user.shops || user.shops.length === 0) return;
-
-    if (!storedId) {
-      setActiveShop(null);
-      return;
-    }
-
-    // Match by ID instead of name
-    const found = user.shops.find((s) => String(s.id) === storedId);
-    if (found) {
-      setActiveShop({ id: found.id, name: found.name, role: found.role });
-    } else {
-      setActiveShop(null);
-      localStorage.removeItem("activeShopId");
-    }
-  }, [activeShop?.id, activeShop?.name]);
-
-  const currentRole: Role = activeShop?.role ?? "NONE";
 
   // ------------------------------
   // GLOBAL GROUPS
   // ------------------------------
   const globalGroups = useMemo<Group[]>(
     () => [
-      // ---------------------------
-      // TOP: MAIN ACCESS
-      // ---------------------------
       {
         id: "main",
-        label: "", // no visible header
+        label: "",
         subs: SUBS.ALL,
         children: [
           {
             id: "overview",
             label: "Overview",
-            link: "/overview",
-            subs: SUBS.ALL,
-          },
-          {
-            id: "inbox",
-            label: "Inbox",
-            link: "/inbox",
+            link: `/overview`,
             subs: SUBS.ALL,
           },
         ],
       },
-
-      // ---------------------------
-      // MY SHOPS
-      // ---------------------------
       {
         id: "shops",
         label: "My Shops",
         subs: SUBS.ALL,
         children: [
-          ...(Array.isArray(user?.shops) && user.shops.length >= 2
-            ? [
-                {
-                  id: "all-shops",
-                  label: "All Shops",
-                  link: "/shops/all",
-                  subs: SUBS.STARTER,
-                },
-              ]
-            : []),
-
           ...(Array.isArray(user?.shops)
             ? user.shops.map((s) => ({
                 id: `shop-${s.id}`,
                 label: s.name,
                 link: `/shops/${encodeURIComponent(s.name)}/overview`,
                 subs: SUBS.ALL,
-                onClick: () => {
-                  setActiveShop({ id: s.id, name: s.name, role: s.role });
-                  localStorage.setItem("activeShopId", String(s.id)); // store ID for reloads
-                  localStorage.setItem("activeShopName", s.name); // optional cosmetic storage
+                onClick: async () => {
+                  await selectShop({ id: s.id, name: s.name, role: s.role });
+                  navigate(`/shops/${encodeURIComponent(s.name)}/overview`);
                 },
               }))
             : []),
@@ -118,54 +61,17 @@ export default function Sidebar({ user }: { user: UserDTO }) {
           },
         ],
       },
-
-      // ---------------------------
-      // CENTRAL INVENTORY (PRO)
-      // ---------------------------
-      {
-        id: "central",
-        label: "",
-        subs: SUBS.ALL,
-        children: [
-          {
-            id: "central-inventory",
-            label: "Central Inventory",
-            link: "/central-inventory",
-            subs: SUBS.ALL,
-          },
-          {
-            id: "create-central-item",
-            label: "Add Item",
-            link: "/central-inventory/create",
-            subs: SUBS.ALL,
-          },
-        ],
-      },
-
-      // ---------------------------
-      // ACCOUNT SETTINGS (BOTTOM)
-      // ---------------------------
       {
         id: "settings",
         label: "Settings",
         subs: SUBS.ALL,
         children: [
-          {
-            id: "account",
-            label: "Account",
-            link: "/settings/account",
-            subs: SUBS.ALL,
-          },
-          {
-            id: "billing",
-            label: "Billing",
-            link: "/settings/billing",
-            subs: SUBS.STARTER,
-          },
+          { id: "account", label: "Account", link: "/settings/account", subs: SUBS.ALL },
+          { id: "billing", label: "Billing", link: "/settings/billing", subs: SUBS.STARTER },
         ],
       },
     ],
-    [user]
+    [user, selectShop, navigate]
   );
 
   // ------------------------------
@@ -174,9 +80,7 @@ export default function Sidebar({ user }: { user: UserDTO }) {
   const shopGroups = useMemo<Group[]>(() => {
     const shopSafeName = activeShop?.name
       ? encodeURIComponent(activeShop.name)
-      : shopIdFromPath
-        ? encodeURIComponent(shopIdFromPath)
-        : null;
+      : null;
 
     return [
       {
@@ -258,7 +162,7 @@ export default function Sidebar({ user }: { user: UserDTO }) {
         ],
       },
     ];
-  }, [activeShop?.id, shopIdFromPath]);
+  }, [activeShop?.id]);
 
   // ------------------------------
   // AVATAR INITIALS
@@ -286,23 +190,16 @@ export default function Sidebar({ user }: { user: UserDTO }) {
         <span />
       </button>
 
-      <aside
-        id="app-sidebar"
-        className={`sidebar ${sidebarOpen ? "open" : ""}`}
-      >
+      <aside id="app-sidebar" className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-head">
-          <div className={`brand ${!activeShop ? "active" : ""}`}>
-            Dashboard
-          </div>
+          <div className={`brand ${!activeShop ? "active" : ""}`}>Dashboard</div>
 
           <div className={`brand shop-mode ${activeShop ? "active" : ""}`}>
             <span className="shop-name">{activeShop?.name}</span>
             <button
               className="back-arrow"
               onClick={() => {
-                setActiveShop(null);
-                localStorage.removeItem("activeShopId");
-                localStorage.removeItem("activeShopName");
+                clearShop();
                 navigate("/overview");
               }}
             >
@@ -313,37 +210,38 @@ export default function Sidebar({ user }: { user: UserDTO }) {
 
         <nav className="nav" aria-label="Primary">
           <div
-            className={`sidebar-slider ${isShopSelected ? "shop-mode" : "global-mode"}`}
+            className={`sidebar-slider ${
+              isShopSelected ? "shop-mode" : "global-mode"
+            }`}
           >
             {/* === GLOBAL PANEL === */}
             <div className="sidebar-panel global">
-              {hasSubscription &&
-                globalGroups
-                  .filter((group) => group.subs.includes(subscription))
-                  .map((group) => (
-                    <div key={group.id} className="grp">
-                      <button className="grp-btn">
-                        <span className="label">{group.label}</span>
-                      </button>
-                      <div className="panel">
-                        {group.children
-                          .filter((child) => child.subs.includes(subscription))
-                          .map((child) => (
-                            <NavLink
-                              key={child.id}
-                              to={child.link!}
-                              onClick={child.onClick}
-                              end
-                              className={({ isActive }) =>
-                                `link ${isActive ? "current" : ""}`
-                              }
-                            >
-                              {child.label}
-                            </NavLink>
-                          ))}
-                      </div>
+              {globalGroups
+                .filter((group) => group.subs.includes(subscription))
+                .map((group) => (
+                  <div key={group.id} className="grp">
+                    <button className="grp-btn">
+                      <span className="label">{group.label}</span>
+                    </button>
+                    <div className="panel">
+                      {group.children
+                        .filter((child) => child.subs.includes(subscription))
+                        .map((child) => (
+                          <NavLink
+                            key={child.id}
+                            to={child.link!}
+                            onClick={child.onClick}
+                            end
+                            className={({ isActive }) =>
+                              `link ${isActive ? "current" : ""}`
+                            }
+                          >
+                            {child.label}
+                          </NavLink>
+                        ))}
                     </div>
-                  ))}
+                  </div>
+                ))}
             </div>
 
             {/* === SHOP PANEL === */}
@@ -351,7 +249,8 @@ export default function Sidebar({ user }: { user: UserDTO }) {
               <div className="sidebar-panel shop">
                 {shopGroups
                   .filter(
-                    (group) => !group.roles || group.roles.includes(currentRole)
+                    (group) =>
+                      !group.roles || group.roles.includes(currentRole)
                   )
                   .map((group) => (
                     <div key={group.id} className="grp">
@@ -391,7 +290,6 @@ export default function Sidebar({ user }: { user: UserDTO }) {
             <div className="avatar">{initials}</div>
             <div className="info">
               <div className="name">{user.name ?? "User"}</div>
-              {/* Fixed: show role when shop selected, subscription otherwise */}
               {isShopSelected ? (
                 <div className="role">{currentRole}</div>
               ) : (
@@ -401,9 +299,7 @@ export default function Sidebar({ user }: { user: UserDTO }) {
           </div>
           <button
             onClick={() => {
-              setActiveShop(null);
-              localStorage.removeItem("activeShopId");
-              localStorage.removeItem("activeShopName");
+              clearShop();
               logout();
             }}
             className="nav-btn logout-btn"
