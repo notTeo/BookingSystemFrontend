@@ -1,11 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useShop } from "../../context/ShopContext";
-import {
-  getShopTeam,
-  //patchShopMemberStatus,
-} from "../../api/shop";
-import type {GetShopTeamResponse} from "../../types/shop"
+import { getShopTeam, toggleShopUserBookable, toggleShopUserStatus } from "../../api/shop";
+import type { GetShopTeamResponse } from "../../types/shop";
 import "./AllTeam.css";
 
 type Member = GetShopTeamResponse["members"][number];
@@ -14,7 +11,6 @@ export default function ShopTeam() {
   const { activeShop, currentRole } = useShop();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
-  const [savingId, setSavingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -44,32 +40,56 @@ export default function ShopTeam() {
   }, [activeShop?.id]);
 
   const handleToggleStatus = async (m: Member) => {
-    // if (!canManage) return;
-    // if (currentRole === "MANAGER" && m.role === "OWNER") return; // managers can’t touch owner
+    if (!activeShop?.id) return;
+    try {
+      const res = await toggleShopUserStatus(activeShop.id, m.id);
+  
+      const newActive = res.data.updated.active;
+  
+      setMembers((prev) =>
+        prev.map((mem) =>
+          mem.id === m.id ? { ...mem, active: newActive } : mem
+        )
+      );
+    } catch (err) {
+      console.error("Failed to toggle member:", err);
+    }
+  };
 
-    // const prev = members;
-    // const next = members.map((x) =>
-    //   x.id === m.id ? { ...x, active: !x.active } : x
-    // );
-    // setMembers(next);
-    // setSavingId(m.id);
-    // try {
-    //   await patchShopMemberStatus(activeShop!.id, m.id, !m.active);
-    // } catch (e) {
-    //   // rollback on error
-    //   setMembers(prev);
-    // } finally {
-    //   setSavingId(null);
-    // }
+  const handleToggleBookable = async (m: Member) => {
+    if (!activeShop?.id) return;
+    try {
+      const res = await toggleShopUserBookable(activeShop.id, m.id);
+  
+      const newActive = res.data.updated.active;
+  
+      setMembers((prev) =>
+        prev.map((mem) =>
+          mem.id === m.id ? { ...mem, active: newActive } : mem
+        )
+      );
+    } catch (err) {
+      console.error("Failed to toggle member:", err);
+    }
   };
 
   const goToMember = (m: Member) => {
     const shopName = encodeURIComponent(activeShop!.name);
-    navigate(`/shops/${shopName}/team/${m.id}`);
+    navigate(`/shops/${shopName}/team/${m.name}`);
   };
 
-  if (loading) return <div className="team-page"><p>Loading team…</p></div>;
-  if (error) return <div className="team-page error"><p>{error}</p></div>;
+  if (loading)
+    return (
+      <div className="team-page">
+        <p>Loading team…</p>
+      </div>
+    );
+  if (error)
+    return (
+      <div className="team-page error">
+        <p>{error}</p>
+      </div>
+    );
 
   const total = members.length;
   const activeCount = members.filter((m) => m.active).length;
@@ -83,7 +103,9 @@ export default function ShopTeam() {
           <button
             className="btn primary"
             onClick={() =>
-              navigate(`/shops/${encodeURIComponent(activeShop!.name)}/team/invite`)
+              navigate(
+                `/shops/${encodeURIComponent(activeShop!.name)}/team/invite`
+              )
             }
           >
             + Add Member
@@ -114,6 +136,7 @@ export default function ShopTeam() {
               <th>Email</th>
               <th>Role</th>
               <th>Status</th>
+              <th>Bookable</th>
               <th>Joined</th>
             </tr>
           </thead>
@@ -134,16 +157,34 @@ export default function ShopTeam() {
                   </td>
 
                   <td onClick={() => goToMember(m)}>
-                    <span className={`role role-${m.role.toLowerCase()}`}>{m.role}</span>
+                    <span className={`role role-${m.role.toLowerCase()}`}>
+                      {m.role}
+                    </span>
                   </td>
 
                   <td>
-                    <label className={`switch ${!canManage || (currentRole === "MANAGER" && m.role === "OWNER") ? "disabled" : ""}`}>
-                      <input
-                        type="checkbox"
-                        checked={m.active}
-                        onChange={() => handleToggleStatus(m)}
-                      />
+                    <label
+                      className={`switch ${!canManage || (currentRole === "MANAGER" && m.role === "OWNER") ? "disabled" : ""}`}
+                    >
+                   <input
+                      type="checkbox"
+                      checked={m.active}
+                      onChange={() => handleToggleStatus(m)}
+                      className="status-checkbox"
+                    />
+                      <span className="slider" />
+                    </label>
+                  </td>
+                  <td>
+                    <label
+                      className={`switch ${!canManage || (currentRole === "MANAGER" && m.role === "OWNER") ? "disabled" : ""}`}
+                    >
+                   <input
+                      type="checkbox"
+                      checked={m.bookable}
+                      onChange={() => handleToggleBookable(m)}
+                      className="status-checkbox"
+                    />
                       <span className="slider" />
                     </label>
                   </td>

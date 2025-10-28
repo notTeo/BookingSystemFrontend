@@ -41,6 +41,12 @@ export default function Sidebar({ user }: { user: UserDTO }) {
         label: "My Shops",
         subs: SUBS.ALL,
         children: [
+          {
+            id: "all-shops",
+            label: "All shops",
+            link: "/shops",
+            subs: SUBS.STARTER,
+          },
           ...(Array.isArray(user?.shops)
             ? user.shops.map((s) => ({
                 id: `shop-${s.id}`,

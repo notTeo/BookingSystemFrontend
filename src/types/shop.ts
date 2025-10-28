@@ -18,6 +18,7 @@ export interface ShopDTO {
   id: number;
   name: string;
   address?: string | null;
+  active: boolean;
   ownerId: number;
   createdAt: string;
   updatedAt: string;
@@ -94,6 +95,7 @@ export interface ShopTeamMember {
   email: string;
   role: Role;        // "OWNER" | "MANAGER" | "STAFF"
   active: boolean;
+  bookable: boolean;
   joinedAt: string;  // ISO
 }
 
@@ -102,4 +104,10 @@ export interface GetShopTeamResponse {
   totalMembers: number;
   activeMembers: number;
   members: ShopTeamMember[];
+}
+
+
+export interface ShopWithRoleDTO extends ShopDTO {
+  role: Role;          // "OWNER" | "MANAGER" | "STAFF"
+  bookable: boolean;   // whether user can be booked
 }
