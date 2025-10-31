@@ -128,3 +128,19 @@ export async function toggleShopUserBookable(shopId: number, userId:number){
   return json.data;
 }
 
+export async function deleteShop(shopId: number){
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("No auth token");
+
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/shop/${shopId}/delete`, {
+    method:  "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || "Failed to fetch shop team");
+  return json.data;
+}

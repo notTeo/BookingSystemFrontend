@@ -21,8 +21,7 @@ import AddBooking from "./pages/Bookings/AddBooking";
 import ServiceLibrary from "./pages/Services/ServiceLibrary";
 import AllTeam from "./pages/Team/AllTeam";
 import Invite from "./pages/Team/Invite";
-import AllItems from "./pages/Inventory/AllItems";
-import AddItem from "./pages/Inventory/AddItem";
+import AllItems from "./pages/Inventory/Inventory";
 import ShopSettings from "./pages/Settings/ShopSettings";
 
 // Layouts
@@ -62,7 +61,6 @@ export default function Router() {
             <Route path="team" element={<AllTeam />} />
             <Route path="team/invite" element={<Invite />} />
             <Route path="inventory" element={<AllItems />} />
-            <Route path="inventory/create" element={<AddItem />} />
             <Route path="settings" element={<ShopSettings />} />
           </Route>
         </Route>

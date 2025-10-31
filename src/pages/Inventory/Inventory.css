@@ -1,0 +1,255 @@
+:root {
+  --bg-main: #0b0b0b;
+  --bg-card: #141414;
+  --bg-hover: #1b1b1b;
+  --border: #2a2a2a;
+  --text: #f5f5f5;
+  --text-muted: #a0a0a0;
+  --accent: #ffffff;
+  --danger: #e74c3c;
+  --danger-hover: #c0392b;
+  --radius: 12px;
+  --transition: 0.25s ease;
+}
+
+.inventory-page {
+  color: var(--text);
+  padding: 24px;
+  background: var(--bg-main);
+  min-height: 100vh;
+}
+
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.inventory-header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.btn {
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all var(--transition);
+  font-weight: 600;
+}
+
+.btn.primary {
+  background: var(--accent);
+  color: #000;
+  padding: 10px 16px;
+  border: none;
+}
+
+.btn.primary:hover {
+  opacity: 0.9;
+}
+
+.btn.secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 16px;
+}
+
+.btn.secondary:hover {
+  background: var(--bg-hover);
+}
+
+.btn.small {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+}
+
+.btn.danger {
+  background: var(--danger);
+  color: white;
+  border: none;
+}
+
+.btn.danger:hover {
+  background: var(--danger-hover);
+}
+
+.inventory-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  padding: 16px 24px;
+  border-radius: var(--radius);
+  flex: 1;
+  text-align: center;
+}
+
+.stat-card h3 {
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.stat-card p {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.active {
+  color: #27ae60;
+}
+
+.inactive {
+  color: #e74c3c;
+}
+
+.inventory-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.inventory-table th,
+.inventory-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.inventory-table th {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.inventory-table tr:hover {
+  background: var(--bg-hover);
+}
+
+.photo-placeholder {
+  width: 50px;
+  height: 50px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: #777;
+  font-size: 0.8rem;
+}
+
+.item-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.actions-cell {
+  display: flex;
+  justify-content: center;   /* Center horizontally */
+  align-items: center;       /* Center vertically */
+  gap: 10px;
+  min-height: 60px;          /* Ensures buttons have enough vertical space */
+  text-align: center;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.status-badge.active {
+  background: rgba(39, 174, 96, 0.1);
+  color: #27ae60;
+}
+
+.status-badge.inactive {
+  background: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 400px;
+}
+
+.modal-form .form-row {
+  margin-bottom: 16px;
+}
+
+.modal-form label {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.modal-form input {
+  width: 100%;
+  padding: 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-main);
+  color: var(--text);
+}
+
+.image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.preview-img {
+  width: 100%;
+  height: 160px;
+  border-radius: var(--radius);
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+
+.preview-placeholder {
+  height: 160px;
+  border-radius: var(--radius);
+  border: 1px dashed var(--border);
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.loading {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 24px;
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 32px;
+}

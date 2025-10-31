@@ -1,7 +1,11 @@
 import { useState } from "react";
 import "./ShopSettings.css";
+import { deleteShop } from "../../api/shop";
+import { useShop } from "../../context/ShopContext";
+import { useNavigate } from "react-router-dom";
 
 export default function ShopSettings() {
+  const { activeShop, clearShop } = useShop();
   const [form, setForm] = useState({
     // === Identity ===
     name: "",
@@ -43,6 +47,7 @@ export default function ShopSettings() {
     // === Danger ===
     deleteConfirm: "",
   });
+  const navigate = useNavigate();
 
   const handleChange = (e:any) => {
     const { name, type, value, checked, files } = e.target;
@@ -57,6 +62,19 @@ export default function ShopSettings() {
     e.preventDefault();
     console.log("Settings saved:", form);
     // TODO: PATCH /shops/:id/settings
+  };
+
+  const handleDelete = async () => {
+    if (form.deleteConfirm !== "DELETE") return;
+    if (!activeShop?.id) return;
+    try {
+      await deleteShop(activeShop.id);
+      clearShop();
+      navigate("/shops");
+    } catch (err) {
+      console.error("Failed to toggle member:", err);
+    }
+
   };
 
   return (
@@ -369,6 +387,7 @@ export default function ShopSettings() {
             <button
               type="button"
               className="delete-btn"
+              onClick={handleDelete}
               disabled={form.deleteConfirm !== "DELETE"}
             >
               Delete Shop
